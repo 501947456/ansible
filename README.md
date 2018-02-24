@@ -11,3 +11,7 @@ ansible_python_interpreter
 [vagrant]
 vagrant1 ansbile_ssh_host=127.0.0.1 ansbile_ssh_port=2200
 vagrant2 ansbile_ssh_host=127.0.0.1 ansbile_ssh_port=2200
+
+#ansible中文结果返回乱码
+module_lang    = zh_CN.UTF-8
+module_set_locale = True
