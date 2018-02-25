@@ -85,3 +85,24 @@ ansible-valut encrypt secrcts.yml
 anisble-valut create secrets.yml
 ansible-playbook mezzanine.yml --ask-valut-pass
 ansible-playbook mezzanine.yml --valut-password-file ~/password.txt
+#使用file lookup
+authorized_keys.j2
+{{ lookup('file','/users/gzw/.ssh/id_rsa.pub')}}
+生成authorized_keys的task
+- name: copy authorized_host file
+  template: src=authorized_keys.j2 dest=/home/deploy/.ssh/authorized_keys
+  
+#env
+- name: get the current shell
+  debug: msg="{{ lookup('env','SHELL') }}"
+
+
+
+
+
+
+
+
+
+
+
