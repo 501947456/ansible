@@ -1,0 +1,17 @@
+ 1.4 检查yaml文件的语法是否正确
+
+$ ansible-playbook -i /tmp/hosts nginx.yaml --syntax-check
+1.5 检查yaml文件中的tasks任务
+
+$ ansible-playbook -i /tmp/hosts nginx.yaml --list-task
+1.6 检查yaml文件中的生效主机
+
+$ ansible-playbook -i /tmp/hosts nginx.yaml --list-hosts
+
+1.7 运行playbook
+
+$ ansible-playbook -i /tmp/hosts nginx.yaml
+
+1.8 运行playbook里面特定的某个task,从某个task开始运行
+
+$ ansible-playbook -i /tmp/hosts nginx.yaml --start-at-task='Copy Nginx.conf'
