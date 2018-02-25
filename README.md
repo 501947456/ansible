@@ -39,6 +39,8 @@ ansible-playbook --list-tasks mezzanine.yml
   - name: install packages
     pip: requirements=~/requirements.txt virtualenv={{ venv_path }}
     
+
+    
  #在控制主机上运行task
  - name: wait for ssh server to be running
    local_action: wait_for port=22 host="{{ inventory_hostname}}" search_regex=OpenSSH
@@ -71,3 +73,15 @@ ansible-playbook --list-tasks mezzanine.yml
     register: result
     changed_when: not result.failed and "Creating tables" in result.out
     faild_when: result.failed and "Database already created" not in result.msg
+    
+    #从主机获取ip地址
+live_hostname: "{{ ansible_eth1.ipv4.address }}.xip.io"
+domains:
+  - ansible_eth1.ipv4.address.xip.io
+#使用valut加密敏感数据，ansible-vault命令工具允许你创建和编辑加密文件，ansible-playbook可以自动识别并使用密码解密这些文件
+加密一个已经存在的文件
+ansible-valut encrypt secrcts.yml
+创建一个名为secrets.yml的加密文件
+anisble-valut create secrets.yml
+ansible-playbook mezzanine.yml --ask-valut-pass
+ansible-playbook mezzanine.yml --valut-password-file ~/password.txt
