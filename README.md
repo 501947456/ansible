@@ -56,3 +56,18 @@ ansible-playbook --list-tasks mezzanine.yml
     serial: 1
     max_fail_percentage: 25
     如果我们在负载均衡后面有四台主机，并且有一台主机执行task失败，那么anisble还将继续执行play,因为没有超过25%，如果有第二台主机执行task失败，anible将会让整个play失败，如果希望ansible在任何主机出现task执行失败的时候都放弃，则需要将max_fail_percentage 设置为0
+    
+ #只执行一次
+ - name: run the database migrations
+   command: /opt/run_migrations
+   run_once: true
+   
+  #处理不利行为命令：changed_when和failed_when
+  - name: initialize the datadase
+    django_manage:
+       command: createdb --noinput --nodata
+       app_path: "{{ proj_path}}"
+       virtualenv: "{{ venv_path }}"
+    register: result
+    changed_when: not result.failed and "Creating tables" in result.out
+    faild_when: result.failed and "Database already created" not in result.msg
