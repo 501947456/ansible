@@ -1,0 +1,25 @@
+#在playbook中使用role
+- name: deploy mezzanine on vagrant
+  hosts: web
+  var_files:
+    - secrets.yml
+  roles:
+     - role: database
+       database_name: "{{ mezzanine_proj_name }}"
+       database_user: "{{ mezzanine_proj_name }}"
+
+#使用ansible-galaxy创建role文件与目录
+ansible-galaxy init web
+#从属role
+假设我们有两个role， web和database 两个role都需要在主机上安装ntp服务
+roles/web/meta/main.yml
+dependencies:
+  - { role: ntp,ntp_server=ntp.ubuntu.com }
+  - { role: web }
+  
+ #安装一个role
+ ansible-galaxy install -p ./roles bennojoy.ntp
+ #列出已安装的role
+ ansible-galaxy list
+ #卸载role
+ ansible-galaxy remove bennojoy.ntp
