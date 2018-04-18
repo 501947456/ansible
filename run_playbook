@@ -15,3 +15,30 @@ $ ansible-playbook -i /tmp/hosts nginx.yaml
 1.8 运行playbook里面特定的某个task,从某个task开始运行
 
 $ ansible-playbook -i /tmp/hosts nginx.yaml --start-at-task='Copy Nginx.conf'
+
+
+ansible-vault encrypt file.yml   加密明文文件file.yml
+ansible-vault decrypt file.yml     解密已加密的文件
+ansible-vault view.file.yml     创建新的加密文件
+ansible-vault create file.yml   编辑已经加密的文件
+ansible-vault rekey file.yml    变更已经加密的文件
+
+ansible-palybook mezzanine.yml --ask-valut-pass
+ansible-palybook mezzanine --valut-password-file ./password.txt
+
+限制某些主机运行
+ansible-playbook -l hosts palybook.yml
+用于注册变量的过滤器
+failed_when: result|failed
+failed|changed|sucess|skipped
+
+文件路径过滤器
+basename 文件路径的文件名部分
+dirname 文件路径中的目录
+expanduser 将文件路径中的~替换为用户目录
+realpath  处理符号链接后的文件实际路径
+vars:
+  homepage: /usr/share/nginx/html/index.html
+tasks:
+   - name: copy home page
+     copy: src=files/{{ homepage | basename }} dest={{ homepage }}
