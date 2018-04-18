@@ -42,3 +42,24 @@ vars:
 tasks:
    - name: copy home page
      copy: src=files/{{ homepage | basename }} dest={{ homepage }}
+     
+     
+authorized_keys.j2
+{{ lookup('file','/users/gzw/.ssh/id_rsa.pub')}}
+
+- name: copy authorized_host file
+  template: src=authorized_keys.j2 dest=/home/deploy/.ssh/authorized_keys
+  
+#with_lines
+ with_lines:
+   - cat file/turing.txt
+  
+
+
+
+
+
+
+
+
+
