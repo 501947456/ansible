@@ -1,0 +1,13 @@
+vars:
+  key_file: /etc/nginx/ssl/nginx.key
+- name: create directories for ssl certificates
+  file: path=/etc/nginx/ssl state=directory
+- name: copy TLS key
+  copy: src=files/nginx.key dest={{key_file}} owner=root mode=0600
+  notify: restart nginx
+- name: copy nginx config file
+  template: src=templates/nginx.confi.j2 dest={{ config_file }}
+handlers:
+  - name: restart nginx
+    service: name=nginx state=restarted
+   
