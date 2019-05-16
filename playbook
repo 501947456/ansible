@@ -1,0 +1,123 @@
+1. 不管配置文件有没有更改（state=changed），都会重启nginx
+---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: Modify the configuration
+    lineinfile:
+      path=/etc/nginx/conf.d/test.zsythink.net.conf
+      regexp="listen(.*) 8080 (.*)"
+      line="listen\1 8088 \2"
+      backrefs=yes
+      backup=yes
+  - name: restart nginx
+    service:
+      name=nginx
+      state=restarted
+      
+      
+ 2.只有当state 为changed时，才会执行nginx重启
+ ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: Modify the configuration
+    lineinfile:
+      path=/etc/nginx/conf.d/test.zsythink.net.conf
+      regexp="listen(.*) 8080(.*)"
+      line="listen\1 8088\2"
+      backrefs=yes
+      backup=yes
+    notify:
+      restart nginx
+ 
+  handlers:
+  - name: restart nginx
+    service:
+      name=nginx
+      state=restarted
+      
+ 3.handler执行顺序与handler在playbook中定义的顺序相同，与handler被notify的顺序无关，默认情况下
+所有的task执行完毕后，才会执行各个handler，并不是执行完某个task后，立即执行对应的handler，如果你想要
+在执行完某些task以后立即执行对应的handler，则需要使用meta模块
+ ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: make testfile1
+    file: path=/testdir/testfile1
+          state=directory
+    notify: ht2
+  - name: make testfile2
+    file: path=/testdir/testfile2
+          state=directory
+    notify: ht1
+ 
+  handlers:
+  - name: ht1
+    file: path=/testdir/ht1
+          state=touch
+  - name: ht2
+    file: path=/testdir/ht2
+          state=touch
+          
+          
+ 4.
+ ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: task1
+    file: path=/testdir/testfile
+          state=touch
+    notify: handler1
+  - name: task2
+    file: path=/testdir/testfile2
+          state=touch
+    notify: handler2
+ 
+  - meta: flush_handlers
+ 
+  - name: task3
+    file: path=/testdir/testfile3
+          state=touch
+    notify: handler3
+ 
+  handlers:
+  - name: handler1
+    file: path=/testdir/ht1
+          state=touch
+  - name: handler2
+    file: path=/testdir/ht2
+          state=touch
+  - name: handler3
+    file: path=/testdir/ht3
+          state=touch
+          
+          
+  4.一次性执行多个handler，把handler分组即可，使用listen关键字
+  ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: task1
+    file: path=/testdir/testfile
+          state=touch
+    notify: handler group1
+ 
+  handlers:
+  - name: handler1
+    listen: handler group1
+    file: path=/testdir/ht1
+          state=touch
+  - name: handler2
+    listen: handler group1
+    file: path=/testdir/ht2
+          state=touch
+          
+          
+          
+          
+          
+          
+          
