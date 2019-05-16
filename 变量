@@ -30,7 +30,7 @@
       state: touch
 
 
-
+####
 变量文件分离：可以隐藏某些值，与剧本主体分离
 
 变量文件：nginx_vars.yml
@@ -127,8 +127,79 @@ debug:
 debug:
      msg: "Remote host memory information : {{ansible_memory_mb['real']}}" 
   
-  
-  
+  注册变量
+ansible的模块在运行之后，其实都会返回一些"返回值",默认情况下，这些返回值并不会显示
+
+---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: test shell
+    shell: "echo test > /var/testshellfile"
+    register: testvar
+  - name: shell module return values
+    debug:
+      var: testvar
+
+
+语法一
+  - name: shell module return values
+    debug:
+      msg: "{{testvar.cmd}}"
+语法二
+  - name: shell module return values
+    debug:
+      msg: "{{testvar['cmd']}}"
+
+
+提示用户输入信息并写入变量
+
+---
+- hosts: test70
+  remote_user: root
+  vars_prompt:
+    - name: "your_name"
+      prompt: "What is your name"
+    - name: "your_age"
+      prompt: "How old are you"
+  tasks:
+   - name: output vars
+     debug:
+      msg: Your name is {{your_name}},You are {{your_age}} years old.
+
+默认情况下用户输入的信息并不会显示，因为private=yes,可以按下面的规则设置
+  vars_prompt:
+    - name: "your_name"
+      prompt: "What is your name"
+      private: no
+    - name: "your_age"
+      prompt: "How old are you"
+      private: no
+
+
+还可以设置默认值
+---
+- hosts: test70
+  remote_user: root
+  vars_prompt:
+    - name: "solution"
+      prompt: "Choose the solution you want \n
+      A: solutionA\n
+      B: solutionB\n
+      C: solutionC\n"
+      private: no
+      default: A
+  tasks:
+   - name: output vars
+     debug:
+      msg: The final solution is {{solution}}.
+
+通过命令行传递变量
+ansible-playbook cmdvar.yml --extra-vars "pass_var=cmdline pass var"
+ansible-playbook cmdvar.yml -e 'pass_var="test" pass_var1="test1"'
+ansible-playbook cmdvar.yml -e '{"testvar":"test","testvar1":"test1"}'
+ansible-playbook cmdvar.yml -e '{"countlist":["one","two","three","four"]}'
+
   
   
   
