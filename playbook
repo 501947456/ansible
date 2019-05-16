@@ -114,9 +114,100 @@
     listen: handler group1
     file: path=/testdir/ht2
           state=touch
+      
+      
+  5.tags 
+  ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: task1
+    file:
+      path: /testdir/t1
+      state: touch
+    tags: t1
+  - name: task2
+    file: path=/testdir/t2
+          state=touch
+    tags: t2
+  - name: task3
+    file: path=/testdir/t3
+          state=touch
+    tags: t3
+    
+    ansible-playbook --tags=t2 testtag.yml
+    ansible-playbook --skip-tags='t2' testtag.yml
+    ansible-playbook --list-tags testhttpd.yml
           
-          
-          
+   ####
+   ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: install httpd package
+    tags: httpd,package
+    yum:
+      name=httpd
+      state=latest
+ 
+  - name: start up httpd service
+    tags: httpd,service
+    service:
+      name: httpd
+      state: started
+      
+   下面这个写法和上面这个写法效果是一样
+   ---
+- hosts: test70
+  remote_user: root
+  tags: httpd
+  tasks:
+  - name: install httpd package
+    tags: ['package']
+    yum:
+      name=httpd
+      state=latest
+ 
+  - name: start up httpd service
+    tags:
+      - service
+    service:
+      name: httpd
+      state: started
+      
+  执行多个tags：ansible-playbook --tags package,service testhttpd.yml
+  ####################
+  ansible 预置了5个特殊tag:
+always:任务总是会被执行，除非使用--skip-tags
+never
+tagged：ansible-playbook --tags tagged testtag.yml 执行有标签的任务，没有任何标签的任务不会被执行
+untagged：ansible-playbook --tags untagged testtag.yml 执行没有标签的任务，但是含有always标签的任务还是会被执行
+all：默认表示所有任务都会执行
+  
+  
+  ---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: task1
+    file:
+      path: /testdir/t1
+      state: touch
+    tags:
+      - t1
+  - name: task2
+    file: path=/testdir/t2
+          state=touch
+    tags: ['t2']
+  - name: task3
+    file: path=/testdir/t3
+          state=touch
+    tags: t3,always
+    
+    
+    
+    
+    ansible-playbook --tags t1 testtag.yml   //t3也会被执行
           
           
           
