@@ -1,0 +1,43 @@
+
+#blockinfile 
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="systemctl start mariadb\nsystemctl start httpd" '
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="systemctl start mariadb\nsystemctl start httpd" marker="#{mark} serivce to start" '
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="systemctl start mariadb" marker="#{mark} serivce to start" '
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="" marker="#{mark} serivce to start" '
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local  marker="#{mark} serivce to start" state=absent'
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="####blockinfile test####"  marker="#{mark} test" insertbefore=BOF'
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="####blockinfile test####"  marker="#{mark} test" insertafter=EOF'
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local block="####blockinfile test####"  marker="#{mark} test reg" insertafter="^#!/bin/bash" '
+ansible test70 -m blockinfile -a 'path=/testdir/rc.local marker="#{mark} test" state=absent backup=yes'
+ansible test70 -m blockinfile -a 'path=/testdir/test block="test" marker="#{mark} test" create=yes'
+
+#linefile
+Hello ansible,Hiiii
+lineinfile -
+Ensure a particular line is in a file,
+lineinfile -
+or replace an existing line using a back-referenced regular expression
+
+ansible test70 -m lineinfile -a 'path=/testdir/test line="test text"'
+ansible test70 -m lineinfile -a 'path=/testdir/test regexp="^line" line="test text" '
+ansible test70 -m lineinfile -a 'path=/testdir/test regexp="^line" line="test text" backrefs=yes '
+ansible test70 -m lineinfile -a 'path=/testdir/test line="lineinfile -" state=absent'
+ansible test70 -m lineinfile -a 'path=/testdir/test regexp="^lineinfile" state=absent'
+ansible test70 -m lineinfile -a 'path=/testdir/test regexp="(H.{4}).*(H.{4})" line="\2" backrefs=yes'
+
+####find
+
+ansible test70 -m find -a 'paths=/testdir contains=".*abc.*" '
+ansible test70 -m find -a 'paths=/testdir contains=".*abc.*" recurse=yes '
+ansible test70 -m find -a 'paths=/testdir patterns="*.sh" hidden=yes'
+ansible test70 -m find -a 'paths=/testdir patterns="*.sh" file_type=any hidden=yes'
+ansible test70 -m find -a 'paths=/testdir patterns=".*\.sh" use_regex=yes file_type=any hidden=yes'
+ansible test70 -m find -a "path=/testdir age=-4d recurse=yes"
+ansible test70 -m find -a "path=/testdir age=-2w age_stamp=atime recurse=yes"
+ansible test70 -m find -a "paths=/testdir size=2g recurse=yes"
+ansible test70 -m find -a "paths=/testdir patterns=*.sh get_checksum=yes  hidden=yes recurse=yes"
+
+#replace
+
+ansible test70 -m replace -a 'path=/testdir/test regexp="ASM" replace=asm backup=yes'
+
