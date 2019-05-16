@@ -66,3 +66,74 @@ vars 和vars_files 同时使用
   - conf90: /etc/nginx/conf.d/90.conf
   vars_files:
   - /testdir/ansible/nginx_vars.yml
+  
+ setup 模块
+当执行playbook时，playbook其实就是自动调用了setup模块从而执行了[Gathering Facts] 任务，手动产看任务收集到信息
+ansible 149 -m setup
+返回信息过多，可以过滤一下
+ansible test70 -m setup -a 'filter=ansible_memory_mb'  === ansible test70 -m setup -a "filter=*mb*"
+
+
+debug模块 可以帮助我们把信息输出到ansible控制台
+
+---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: touch testfile
+    file:
+      path: /testdir/testfile
+      state: touch
+  - name: debug demo
+    debug:
+      msg: this is debug info,The test file has been touched
+
+
+---
+- hosts: test70
+  remote_user: root
+  vars:
+    testvar: value of test variable
+  tasks:
+  - name: debug demo
+    debug:
+      var: testvar
+
+
+---
+- hosts: test70
+  remote_user: root
+  vars:
+    testvar: testv
+  tasks:
+  - name: debug demo
+    debug:
+      msg: "value of testvar is : {{testvar}}"
+
+
+setup和debug结合
+---
+- hosts: test70
+  remote_user: root
+  tasks:
+  - name: debug demo
+    debug:
+      msg: "Remote host memory information: {{ansible_memory_mb}}"
+
+语法一示例：
+debug:
+     msg: "Remote host memory information : {{ansible_memory_mb.real}}"
+语法二示例：
+debug:
+     msg: "Remote host memory information : {{ansible_memory_mb['real']}}" 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
