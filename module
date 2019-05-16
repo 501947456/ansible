@@ -41,3 +41,57 @@ ansible test70 -m find -a "paths=/testdir patterns=*.sh get_checksum=yes�
 
 ansible test70 -m replace -a 'path=/testdir/test regexp="ASM" replace=asm backup=yes'
 
+
+#script
+ansible test70 -m script -a "chdir=/opt /testdir/atest.sh"
+ansible test70 -m script -a "creates=/opt/testfile /testdir/atest.sh"
+ansible test70 -m script -a "removes=/opt/testfile /testdir/atest.sh"
+
+
+#cron
+ansible test70 -m cron -a " name='test crontab' minute=5 hour=1 job='echo test' "
+ansible test70 -m cron -a " name='crontab day test' minute=1 hour=1 day=*/3 job='echo test' "
+ansible test70 -m cron -a " name='test special time' special_time=reboot job='echo test' "
+ansible test70 -m cron -a " name='test special time' special_time=reboot job='echo test' "
+ansible test70 -m cron -a " name='test special time' state=absent backup=yes "
+ansible test70 -m cron -a "user=zsy name='test special time' special_time=hourly job='echo test'"
+ansible test70 -m cron -a " name='crontab day test' minute=1 hour=1 day=*/3 job='echo test'  disabled=yes backup=yes"
+
+
+#user
+ansible test70 -m user -a 'name=zsy state=absent'
+ansible test70 -m user -a 'name=abc state=absent remove=yes'
+ansible test70 -m user -a "name=zsy group=zsythink"
+ansible test70 -m user -a "name=zsy groups=zsythink append=yes"
+ansible test70 -m user -a 'name=zsy expires=1546185600'
+
+>>> import crypt; crypt.crypt('666666')
+'$6$ygRbo7Fj.mMU2KY0$OEqihCCn5UfOsvMyzPNPBgx3bzAtwrOFyFvacgUmA374XOAEtUCrdjbW5Ip.Zqo491o3kD5I.HaC9nLhh6x741'
+
+ansible test70 -m user -a ' name=zsy password="$6$ygRbo7Fj.mMU2KY0$OEqihCCn5UfOsvMyzPNPBgx3bzAtwrOFyFvacgUmA374XOAEtUCrdjbW5Ip.Zqo491o3kD5I.HaC9nLhh6x741" '
+
+ansible test70 -m user -a 'name=zsy password="$6$a.ofrhIWn4gJGbi0$i6Xhr.F/YyhMe2UCodydwyF952bP4DOf0qYcGE8aK.EsgOR/GKU0Oy9Ov6oIH3RIJ9BnhvoVR9ozflmUJgxhL0" update_password=on_create'
+
+
+ansible test70 -m user -a 'name=zsy generate_ssh_key=yes'
+
+ansible test70 -m user -a 'name=zsy generate_ssh_key=yes ssh_key_file=/opt/id_rsa_zsy'
+
+ansible test70 -m user -a 'name=zsy generate_ssh_key=yes ssh_key_passphrase="123456"'
+
+
+
+#yum
+
+ansible test70 -m yum_repository -a 'name=aliEpel description="alibaba EPEL" baseurl=https://mirrors.aliyun.com/epel/$releasever\Server/$basearch/'
+
+ansible test70 -m yum -a 'name=nginx disable_gpg_check=yes'
+ansible test70 -m yum -a 'name=nginx state=present disable_gpg_check=yes'
+ansible test70 -m yum -a 'name=nginx state=installed disable_gpg_check=yes'
+
+ansible test70 -m yum -a 'name=nginx state=latest disable_gpg_check=yes'
+ansible test70 -m yum -a 'name=nginx state=absent'
+ansible test70 -m yum -a 'name=nginx state=removed'
+ansible test70 -m yum -a 'name=telnet disable_gpg_check=yes enablerepo=local'
+
+
